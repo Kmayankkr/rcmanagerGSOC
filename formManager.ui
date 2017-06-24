@@ -36,7 +36,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -303,7 +303,7 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>NetWork Editor</string>
+        <string>Network Editor</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0">
         <property name="spacing">
@@ -603,7 +603,7 @@
           <x>0</x>
           <y>0</y>
           <width>236</width>
-          <height>260</height>
+          <height>173</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
