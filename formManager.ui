@@ -458,6 +458,7 @@
     <addaction name="actionControlPanel"/>
     <addaction name="actionLogger"/>
     <addaction name="actionComponent_List"/>
+    <addaction name="actionFull_Screen"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -745,6 +746,14 @@
    </property>
    <property name="text">
     <string>Component List</string>
+   </property>
+  </action>
+  <action name="actionFull_Screen">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Full Screen</string>
    </property>
   </action>
  </widget>
