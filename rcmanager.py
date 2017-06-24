@@ -30,7 +30,6 @@
 import sys, time, traceback, os, math, random, threading, time
 import Ice
 
-
 from PyQt4 import QtCore, QtGui, Qt
 import ui_formManager,rcmanagerConfig
 
@@ -134,6 +133,7 @@ class MainClass(QtGui.QMainWindow):
 		# View menu buttons 
 		self.connect(self.UI.actionLogger,QtCore.SIGNAL("triggered(bool)"),self.toggleLoggerView)
 		self.connect(self.UI.actionComponent_List,QtCore.SIGNAL("triggered(bool)"),self.toggleComponentListView)
+		self.connect(self.UI.actionFull_Screen,QtCore.SIGNAL("triggered(bool)"),self.toggleFullScreenView)
 			
 		self.connect(self.UI.actionON,QtCore.SIGNAL("triggered(bool)"),self.simulatorOn)
 		self.connect(self.UI.actionOFF,QtCore.SIGNAL("triggered(bool)"),self.simulatorOff)
@@ -180,20 +180,39 @@ class MainClass(QtGui.QMainWindow):
 	def toggleLoggerView(self):
 		if self.UI.actionLogger.isChecked():
 			self.UI.dockWidget.show() 
+			self.UI.actionFull_Screen.setChecked(False)
 		else:
 			self.UI.dockWidget.hide()
+			self.UI.actionFull_Screen.setChecked(not self.UI.actionComponent_List.isChecked())			
 		
 	def toggleComponentListView(self):
 		if self.UI.actionComponent_List.isChecked():
 			self.UI.dockWidget_2.show() 
+			self.UI.actionFull_Screen.setChecked(False)
 		else:
 			self.UI.dockWidget_2.hide() 
+			self.UI.actionFull_Screen.setChecked(not self.UI.actionLogger.isChecked())
+			
+	def toggleFullScreenView(self):
+		if self.UI.actionFull_Screen.isChecked():
+			self.UI.actionLogger.setChecked(False) 
+			self.UI.actionComponent_List.setChecked(False) 
+			
+			self.toggleLoggerView()
+			self.toggleComponentListView()
+		else:
+			self.UI.actionLogger.setChecked(True)
+			self.UI.actionComponent_List.setChecked(True)
+			
+			self.toggleLoggerView()
+			self.toggleComponentListView()
 					
 	# View menu functions end
 		
 	def getFreq(self):
 		comp=self.graphTree.CompoPopUpMenu.currentComponent.parent 
 		comp.CheckItem.getFreq()
+		
 	def EditSelectedComponent(self):	
 		self.UI.tabWidget.setCurrentIndex(1)
 		self.CodeEditor.findFirst(self.graphTree.CompoPopUpMenu.currentComponent.parent.alias,False,True,True,True)
@@ -216,6 +235,7 @@ class MainClass(QtGui.QMainWindow):
 			component.group.downGroupComponents(self.Logger)
 		else:
 			self.Logger.logData("No group","R")	
+			
 	def componentRemoveFromGroup(self):
 		component=self.graphTree.CompoPopUpMenu.currentComponent.parent
 		if component.group!=None:
@@ -224,20 +244,20 @@ class MainClass(QtGui.QMainWindow):
 			self.refreshCodeFromTree()
 		else:
 			self.Logger.logData("No group","R")
+			
 	def addComponentToGroup(self):
 		component=self.graphTree.CompoPopUpMenu.currentComponent.parent
 		self.groupSelector.openSelector(component,self.networkSettings.Groups)
 		self.NetworkScene.update()
 		self.refreshCodeFromTree()
+		
 	def BuildNewConnection(self):
-
 		self.graphTree.connectionBuidingStatus=True
 		print "Connection Building"
 		self.connectionBuilder.buildNewConnection()
 		self.connectionBuilder.setBeg(self.graphTree.CompoPopUpMenu.currentComponent.parent)
 		self.connectionBuilder.show()
 		
-
 	def addNewGroup(self):
 		self.groupBuilder.startBuildGroup(self.networkSettings)
 
@@ -249,19 +269,23 @@ class MainClass(QtGui.QMainWindow):
 		if index==1 or index==2:##CommonProxy should only work if the first tab is visible
 			if self.currentComponent != None:
 				self.currentComponent.CommonProxy.setVisibility(False)
+				
 	def addNetworkTempl(self):
 		string=rcmanagerConfig.getDefaultSettings()
 		pos=self.CodeEditor.getCursorPosition()
 		self.CodeEditor.insertAt(string,pos[0],pos[1])
+		
 	def getNetworkSetting(self):#This will show the Network setting Dialog box and will help to update the stuffs
 		self.networkSettingDialog.setData(self.networkSettings)
 		self.networkSettingDialog.show()
+		
 	def editorFontSettings(self):#BUUUUUUUUUUUUUGGGG
 		font,ok=QtGui.QFontDialog.getFont()
 		if ok:
 			self.CodeEditor.setFont(font)
 			self.CodeEditor.font=font
 			self.Logger.logData("New font set for code Editor")
+			
 	def refreshCodeFromTree(self):
 		self.HadChanged=True
 		string=rcmanagerConfig.getXmlFromNetwork(self.networkSettings,self.componentList,self.Logger)
@@ -326,7 +350,6 @@ class MainClass(QtGui.QMainWindow):
 		self.centerAlignGraph()	
 		
 	def centerAlignGraph(self):
-	
 		self.midValueHorizontal = (self.graphTree.horizontalScrollBar().maximum()+self.graphTree.horizontalScrollBar().minimum())/2
 		self.midValueVertical = (self.graphTree.verticalScrollBar().maximum()+self.graphTree.verticalScrollBar().minimum())/2
 		
@@ -378,7 +401,6 @@ class MainClass(QtGui.QMainWindow):
 		if original.endpoint!=temp.endpoint:
 			original.CheckItem.initializeComponent()
 
-
 	def searchInsideList(self,List,name):
 		flag=0
 		for x in List:
@@ -391,10 +413,12 @@ class MainClass(QtGui.QMainWindow):
 
 	def printTemplSettings(self):
 		pass
+		
 	def addComponentTempl(self):
 		string=rcmanagerConfig.getDefaultNode()
 		pos=self.CodeEditor.getCursorPosition()
 		self.CodeEditor.insertAt(string,pos[0],pos[1])
+		
 	def searchEnteredAlias(self):#Called when we type an alias and search it
 		try:
 			alias=self.UI.lineEdit.text()
@@ -412,8 +436,10 @@ class MainClass(QtGui.QMainWindow):
 			self.UI.lineEdit.clear()
 		finally:
 			pass
+			
 	def haveChanged(self):#When the network have changed
 		self.HadChanged=True
+		
 	def ipCount(self):#To find all the computer present
 		self.ipList=[]##Ip listed from the xml file
 		for x in self.componentList.__iter__():
@@ -463,27 +489,31 @@ class MainClass(QtGui.QMainWindow):
 	
 	def componentSettings(self,component):#To edit the settings of currentComponent
 		print "Settings of current component"
+		
 	def controlComponent(self,component):#To open up the control panel of current component
 		print "Controlling the current component"
+		
 	def downSelectedComponent(self):
 		component=self.graphTree.CompoPopUpMenu.currentComponent
 		rcmanagerConfig.downComponent(component.parent,self.Logger)
 	
-	
-
 	def upSelectedComponent(self):#This will up a selected component
 		component=self.graphTree.CompoPopUpMenu.currentComponent
 		rcmanagerConfig.upComponent(component.parent,self.Logger)
+		
 	def setNetworkSettings(self):#To edit the network tree general settings
 		print "network setting editing"	
+		
 	def searchInsideTree(self):#To search a particular component from tree
 		print "Searching inside the tree"
+		
 	def upAllComponents(self):#To set all components in up position
 		for x in self.componentList.__iter__():
 			try:
 				rcmanagerConfig.upComponent(x,self.Logger)
 			except Exception, e:
 				pass
+				
 	def downAllComponents(self):#To set all components in down position
 		for x in self.componentList.__iter__():
 			try:
@@ -491,20 +521,25 @@ class MainClass(QtGui.QMainWindow):
 				time.sleep(.5)
 			except Exception,e :
 				pass
+				
 	def simulatorSettings(self):##To edit the simulatorSettings:Unfinished
 		print "Simulator settings is on"
+		
 	def controlPanelSettings(self):##To edit the controlPanel Settings:Unfinshed
 		print "Control panel settings"
+		
 	def editorSettings(self):##To edit the editors settins:Unfinshed
 		print "Editor Settings"	
+		
 	def simulatorOff(self):	#To switch Off the simulator::Unfiunished
 		self.Logger.logData("Simulator Ended")
 		self.simulatorTimer.stop()
+		
 	def simulatorOn(self):
 		self.Logger.logData("Simulator Started")
 		self.simulatorTimer.start(300)
-	def simulate(self):#To switch ON simulator::Unfinished
 		
+	def simulate1(self):#To switch ON simulator::Unfinished
 		for iterr in self.componentList:
 			force_x = force_y = 0.
 			for iterr2 in self.componentList:
@@ -554,18 +589,66 @@ class MainClass(QtGui.QMainWindow):
 			iterr.graphicsItem.setPos(QtCore.QPointF(iterr.x,iterr.y))
 			iterr.graphicsItem.updateforDrag()
 
-	def simulate2(self):##Another Simulation algorithum Working on that..
-		min=self.componentList[0]
-		for iterr in self.componentList:
-			if iterr.x<min.x:
-				min=iterr
+	def simulate(self): 
+		optimalGap = 500
+		tolerance = 200
+	
+		repulsionFactor = (optimalGap-tolerance)**2.1
+		attractionFactor = 0
+		dampingFactor=1
+	
+		for i in self.componentList:
+		
+			attractiveForceX=0
+			attractiveForceY=0
+			repulsiveForceX=0
+			repulsiveForceY=0
+			netForceX=0
+			netForceY=0 
+			dx=0
+			dy=0
+		
+			for j in self.componentList:
+				if i.alias == j.alias: 
+					continue
+				
+				distance=((i.x-j.x)**2 + (i.y-j.y)**2)**0.5 
 
-				
-				
+				if distance==0:
+					distance=0.1
+			
+				attractiveForceX+=attractionFactor*(j.x-i.x)
+				attractiveForceY+=attractionFactor*(j.y-i.y)
+			
+				repulsiveForceX+=repulsionFactor*(i.x-j.x)/(distance**3)
+				repulsiveForceY+=repulsionFactor*(i.y-j.y)/(distance**3)
+			
+			netForceX=attractiveForceX+repulsiveForceX
+			netForceY=repulsiveForceX+repulsiveForceY
+		
+			dx=netForceX*dampingFactor
+			dy=netForceY*dampingFactor
+		
+			dx = int(dx)
+			dy = int(dy)			
+		
+			i.vel_x=i.x+dx
+			i.vel_y=i.y+dy 
+		
+		for i in self.componentList:
+			i.x=i.vel_x
+			i.y=i.vel_y
+	
+		for i in self.componentList:
+			i.graphicsItem.setPos(QtCore.QPointF(i.x,i.y))
+			i.graphicsItem.updateforDrag()
+					
 	def rcmanagerSetting(self):#To edit the setting of the entire rcmanager settings tool
 		pass
+		
 	def exitRcmanager(self):##To exit the tool after doing all required process
 		print "Exiting"
+		
 	def drawAllComponents(self):#Called to draw the components
 		for x in self.componentList.__iter__():
 			self.NetworkScene.addItem(x.graphicsItem)
@@ -595,9 +678,7 @@ class MainClass(QtGui.QMainWindow):
 		if not flag:
 			raise Exception("No such component with alias "+alias)
 
-	
 	def setAconnection(self,toComponent,fromComponent):#To set these two components
-		
 		connection=rcmanagerConfig.NodeConnection()
 		
 		connection.toComponent=toComponent
@@ -615,6 +696,7 @@ class MainClass(QtGui.QMainWindow):
 		len=self.componentList.__len__()
 		for x in range(len):
 			self.deleteComponent(self.componentList[len-1-x])
+			
 	def openXmlFile(self,terminalArg=False,UserHaveChoice=True):#To open the xml files ::Unfinished
 		Settings=rcmanagerConfig.NetworkValues()
 		List=[]
@@ -635,14 +717,14 @@ class MainClass(QtGui.QMainWindow):
 		self.refreshTreeFromCode(firstTime=True)
 		self.HadChanged=False
 		
-		
-		
 	def setAllGraphicsData(self):
 		for x in self.componentList:
 			x.setGraphicsData()
+			
 	def StatusBarFileNameWrite(self,string):
 		Label=QtGui.QLabel(string)
 		self.UI.statusbar.addWidget(Label)
+		
 	def saveXmlFile(self):##To save the entire treesetting into a xml file
 		try:
 			saveFileName=QtGui.QFileDialog.getSaveFileName(self,'Save File',initDir,'*.xml')
@@ -664,13 +746,13 @@ class MainClass(QtGui.QMainWindow):
 	#def saveTofile(fileName):#Save to this filename
 	#	rcmanagerConfig.writeConfigToFile(self.networkSettings,self.componentList,fileName)
 			
-	
 	def setZoom(self): ##To connect the slider motion to zooming
 		self.UI.verticalSlider.setRange(-20,20)
 		self.UI.verticalSlider.setTickInterval(0.5)
 		self.UI.verticalSlider.setValue(0)
 		self.currentZoom=0
 		self.UI.verticalSlider.valueChanged.connect(self.graphZoom)
+		
 	def graphZoom(self):##To be called when ever we wants to zoomingfactor
 		#NoAnchor
 		#AnchorViewCenter
@@ -690,7 +772,6 @@ class MainClass(QtGui.QMainWindow):
 		self.addNewComponent(scenePos)	
 
 	def addNewComponent(self,pos=QtCore.QPointF()):#The final function which takes care of adding new component default zero
-	
 		component=rcmanagerConfig.CompInfo(view=self.graphTree,mainWindow=self,name="Component"+str(self.componentList.__len__()))
 		#component.CheckItem.setLogger(self.Logger)
 		self.componentList.append(component)
@@ -703,6 +784,7 @@ class MainClass(QtGui.QMainWindow):
 		self.UI.verticalLayout.insertWidget(self.UI.verticalLayout.count()-1,component.DirectoryItem)
 		self.UI.tabWidget.setCurrentIndex(1)
 		self.CodeEditor.findFirst("Component"+str(self.componentList.__len__()-1),False,True,True,True)
+		
 	def deleteComponent(self,component):##This will delete the component Not completed 
 		
 		#	print component.alias
@@ -729,14 +811,11 @@ class MainClass(QtGui.QMainWindow):
 		self.Logger.logData("Deleted the Component:: "+component.alias+" SuccessFully")
 		#print self.componentList.__len__()
 
-		
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
 	window=MainClass()
 	window.show()
-	
-	
-	
+		
 	if sys.argv.__len__()>1:
 		try:
 			if sys.argv.__len__()>3:
@@ -751,8 +830,7 @@ if __name__ == '__main__':
 			if sys.argv[1].endswith(".xml"):
 				window.filePath=sys.argv[1]
 				window.openXmlFile(terminalArg=True)
-				
-				
+
 			elif sys.argv[1].endswith(".log"):
 				window.Logger.setFile(sys.argv[1])
 			else:
@@ -769,5 +847,4 @@ if __name__ == '__main__':
 	except:
 		print 'Some error happened.'
 			
-
 	sys.exit()
