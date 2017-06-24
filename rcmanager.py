@@ -110,7 +110,6 @@ class MainClass(QtGui.QMainWindow):
 		#print "Count is "+ str(self.UI.verticalLayout.count())
 		#self.UI.toolButton_6.setMouseTracking(True)
 		
-		
 	def setupActions(self):##To setUp connection like saving,opening,etc
 		self.connect(self.simulatorTimer,QtCore.SIGNAL("timeout()"),self.simulate)
 		#self.connect(self.UI.toolButton,QtCore.SIGNAL("hovered()"),self.hoverAddComponent)
@@ -123,10 +122,19 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.UI.actionSet_Log_File,QtCore.SIGNAL("triggered(bool)"),self.setLogFile)
 
 		self.connect(self.UI.tabWidget,QtCore.SIGNAL("currentChanged(int)"),self.tabIndexChanged)
+		
+		# File menu buttons
 		self.connect(self.UI.actionSave,QtCore.SIGNAL("triggered(bool)"),self.saveXmlFile)
 		self.connect(self.UI.actionOpen,QtCore.SIGNAL("triggered(bool)"),self.openXmlFile)
 		self.connect(self.UI.actionExit,QtCore.SIGNAL("triggered(bool)"),self.exitRcmanager)
+		
+		# Edit menu buttons 
 		self.connect(self.UI.actionSetting,QtCore.SIGNAL("triggered(bool)"),self.rcmanagerSetting)
+		
+		# View menu buttons 
+		self.connect(self.UI.actionLogger,QtCore.SIGNAL("triggered(bool)"),self.toggleLoggerView)
+		self.connect(self.UI.actionComponent_List,QtCore.SIGNAL("triggered(bool)"),self.toggleComponentListView)
+			
 		self.connect(self.UI.actionON,QtCore.SIGNAL("triggered(bool)"),self.simulatorOn)
 		self.connect(self.UI.actionOFF,QtCore.SIGNAL("triggered(bool)"),self.simulatorOff)
 		self.connect(self.UI.actionSetting_2,QtCore.SIGNAL("triggered(bool)"),self.simulatorSettings)
@@ -164,10 +172,24 @@ class MainClass(QtGui.QMainWindow):
 		self.connect(self.UI.toolButton_9,QtCore.SIGNAL("clicked()"),self.editorFontSettings)
 		#self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
 		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
+		
 		self.Logger.logData("Tool Started")
 		
+	# View menu functions begin 
+	
+	def toggleLoggerView(self):
+		if self.UI.actionLogger.isChecked():
+			self.UI.dockWidget.show() 
+		else:
+			self.UI.dockWidget.hide()
 		
-		
+	def toggleComponentListView(self):
+		if self.UI.actionComponent_List.isChecked():
+			self.UI.dockWidget_2.show() 
+		else:
+			self.UI.dockWidget_2.hide() 
+					
+	# View menu functions end
 		
 	def getFreq(self):
 		comp=self.graphTree.CompoPopUpMenu.currentComponent.parent 
@@ -245,7 +267,7 @@ class MainClass(QtGui.QMainWindow):
 		string=rcmanagerConfig.getXmlFromNetwork(self.networkSettings,self.componentList,self.Logger)
 		self.CodeEditor.setText(string)
 		self.Logger.logData("Code Updated SucceFully from the graph")
-		self.centerAlign()	
+		self.centerAlignGraph()	
 		
 	def refreshTreeFromCode(self,firstTime=False):#This will refresh the code (Not to file)and draw the new tree
 		#print "Refreshing"
@@ -301,9 +323,9 @@ class MainClass(QtGui.QMainWindow):
 							self.copyAndUpdate(x,y)
 				self.Logger.logData("Tree Updated succesfully From File")
 	
-		self.centerAlign()	
+		self.centerAlignGraph()	
 		
-	def centerAlign(self):
+	def centerAlignGraph(self):
 	
 		self.midValueHorizontal = (self.graphTree.horizontalScrollBar().maximum()+self.graphTree.horizontalScrollBar().minimum())/2
 		self.midValueVertical = (self.graphTree.verticalScrollBar().maximum()+self.graphTree.verticalScrollBar().minimum())/2
@@ -741,7 +763,7 @@ if __name__ == '__main__':
 			sys.exit()
 	
 	try:
-		QtCore.QTimer.singleShot(50, window.centerAlign)
+		QtCore.QTimer.singleShot(50, window.centerAlignGraph)
 		ret = app.exec_()
 
 	except:
@@ -749,4 +771,3 @@ if __name__ == '__main__':
 			
 
 	sys.exit()
-
