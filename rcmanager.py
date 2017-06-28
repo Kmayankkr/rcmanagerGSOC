@@ -27,11 +27,13 @@
 # CODE BEGINS
 #
 
-import sys, time, traceback, os, math, random, threading, time
+import sys, time, traceback, os, math, random, threading, time, signal
 import Ice
 
 from PyQt4 import QtCore, QtGui, Qt
-import ui_formManager,rcmanagerConfig
+import ui_formManager, rcmanagerConfig
+
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
