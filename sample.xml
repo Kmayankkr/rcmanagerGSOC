@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rcmanager>
+
+ <generalInformation>
+  <editor path="kate" />
+  <timeouts fixed="1000" blink="300" />
+  <clicks switch="2" interval="400" />
+  <graph alpha="80" active="true" scale="200" />
+  <graphTiming idletime="1000" focustime="500" fasttime="10" fastperiod="2000" />
+ </generalInformation>
+
+ <node alias="com1" endpoint="com1: tcp -p 10025">
+  <workingDir path="/home/robocomp/robocomp/components/rcmanagerTest/com1/" />
+  <upCommand command="python /home/robocomp/robocomp/components/rcmanagerTest/com1/src/com1.py --Ice.Config=/home/robocomp/robocomp/components/rcmanagerTest/com1/etc/config" />
+  <downCommand command="killall -9 com1" />
+  <configFile path="/home/robocomp/robocomp/components/rcmanagerTest/com1/etc/config" />
+  <xpos value="0" />
+  <ypos value="-100" />
+  <radius value="10.0" />
+ </node>
+
+ <node alias="com2" endpoint="com2: tcp -p 10025">
+  <dependence alias="com1" />
+  <workingDir path="/home/robocomp/robocomp/components/rcmanagerTest/com1/" />
+  <upCommand command="python /home/robocomp/robocomp/components/rcmanagerTest/com2/src/com1.py --Ice.Config=/home/robocomp/robocomp/components/rcmanagerTest/com2/etc/config" />
+  <downCommand command="killall -9 com2" />
+  <configFile path="/home/robocomp/robocomp/components/rcmanagerTest/com1/etc/config" />
+  <xpos value="0" />
+  <ypos value="+100" />
+  <radius value="10.0" />
+ </node>
+
+</rcmanager>
