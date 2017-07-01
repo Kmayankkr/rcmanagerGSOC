@@ -175,7 +175,7 @@ class MainClass(QtGui.QMainWindow):
 		#self.connect(self.UI.toolButton_10,QtCore.SIGNAL("clicked()"),self.getNetworkSetting)(Once finished Uncomment this)
 		self.connect(self.UI.toolButton,QtCore.SIGNAL("clicked()"),self.addNewComponent)
 		
-		self.Logger.logData("Tool Started")
+		self.Logger.logData("Tool started")
 		
 	# View menu functions begin 
 	
@@ -286,13 +286,13 @@ class MainClass(QtGui.QMainWindow):
 		if ok:
 			self.CodeEditor.setFont(font)
 			self.CodeEditor.font=font
-			self.Logger.logData("New font set for code Editor")
+			self.Logger.logData("New font set for code editor")
 			
 	def refreshCodeFromTree(self):
 		self.HadChanged=True
 		string=rcmanagerConfig.getXmlFromNetwork(self.networkSettings,self.componentList,self.Logger)
 		self.CodeEditor.setText(string)
-		self.Logger.logData("Code Updated SucceFully from the graph")
+		self.Logger.logData("Code updated successfully from the graph")
 		self.centerAlignGraph()	
 		
 	def refreshTreeFromCode(self,firstTime=False):#This will refresh the code (Not to file)and draw the new tree
@@ -300,7 +300,7 @@ class MainClass(QtGui.QMainWindow):
 		try:
 			List,Settings=rcmanagerConfig.getDataFromString(str(self.CodeEditor.text()),self.Logger)
 		except Exception,e:
-			self.Logger.logData("Error while updating tree from Code::"+str(e), "R")
+			self.Logger.logData("Error while updating tree from code::"+str(e), "R")
 		else:
 
 			if firstTime==True:
@@ -323,11 +323,11 @@ class MainClass(QtGui.QMainWindow):
 					self.FileOpenStatus=True
 					self.UserBuiltNetworkStatus=True
 					#self.HadChanged=False
-					self.Logger.logData("File Updated SuccessFully from the Code Editor")
+					self.Logger.logData("File updated successfully from the code editor")
 					self.refreshCodeFromTree()
 					
 				except Exception,e:
-					self.Logger.logData("File updation from Code Failed "+str(e),"R")
+					self.Logger.logData("File updation from code failed "+str(e),"R")
 
 			else:
 				self.networkSettings=Settings
@@ -347,7 +347,7 @@ class MainClass(QtGui.QMainWindow):
 					for y in List:
 						if x.alias==y.alias:
 							self.copyAndUpdate(x,y)
-				self.Logger.logData("Tree Updated succesfully From File")
+				self.Logger.logData("Tree updated successfully from file")
 	
 		self.centerAlignGraph()	
 		
@@ -367,7 +367,7 @@ class MainClass(QtGui.QMainWindow):
 			original.y=temp.y
 			original.graphicsItem.setPos(original.x,original.y)
 			original.graphicsItem.updateforDrag()	
-			self.Logger.logData("Position Updated of ::"+original.alias)
+			self.Logger.logData("Position updated of ::"+original.alias)
 		
 		original.workingdir=temp.workingdir
 		original.compup=temp.compup
@@ -433,7 +433,7 @@ class MainClass(QtGui.QMainWindow):
 				#x.graphicsItem.setSelected(True)
 			self.Logger.logData(alias+"  Found")
 		except Exception, e:
-			self.Logger.logData("Search Error::  "+ str(e),"R")
+			self.Logger.logData("Search error::  "+ str(e),"R")
 		else:
 			self.UI.lineEdit.clear()
 		finally:
@@ -471,10 +471,10 @@ class MainClass(QtGui.QMainWindow):
 					for y in self.componentList.__iter__():
 						if self.ipList[x]==y.Ip:
 							y.graphicsItem.IpColor=QtGui.QColor.fromRgb(255,255,num-510)
-			self.Logger.logData("IpColor Alloted SuccessFully")		
+			self.Logger.logData("IpColor alloted successfully")		
 			
 		except Exception,e:
-			raise Exception("Error During Alloting Ipcolors "+str(e))
+			raise Exception("Error during Ipcolors allocation "+str(e))
 			  	
 
 	def setComponentVariables(self):#Temperory function to be edited later
@@ -534,11 +534,11 @@ class MainClass(QtGui.QMainWindow):
 		print "Editor Settings"	
 		
 	def simulatorOff(self):	#To switch Off the simulator::Unfiunished
-		self.Logger.logData("Simulator Ended")
+		self.Logger.logData("Simulator ended")
 		self.simulatorTimer.stop()
 		
 	def simulatorOn(self):
-		self.Logger.logData("Simulator Started")
+		self.Logger.logData("Simulator started")
 		self.simulatorTimer.start(300)
 		
 	def simulate1(self):#To switch ON simulator::Unfinished
@@ -667,7 +667,7 @@ class MainClass(QtGui.QMainWindow):
 				try :
 					comp=self.searchforComponent(y)
 					self.setAconnection(comp,x)
-					self.Logger.logData("Connection from "+comp.alias+" to "+x.alias+" Set")
+					self.Logger.logData("Connection from "+comp.alias+" to "+x.alias+" set")
 				except Exception,e:
 					print "Error while setting connection ::"+str(e)
 
@@ -715,7 +715,7 @@ class MainClass(QtGui.QMainWindow):
 			string=rcmanagerConfig.getStringFromFile(self.filePath)
 			self.CodeEditor.setText(string)
 		except:
-			self.Logger.logData("Couldn't Read from File")	
+			self.Logger.logData("Couldn't read from file")	
 		self.refreshTreeFromCode(firstTime=True)
 		self.HadChanged=False
 		
@@ -741,9 +741,9 @@ class MainClass(QtGui.QMainWindow):
 				raise Exception("Can't Open"+saveFileName)
 			#rcmanagerConfig.writeToFile(file,string)
 
-			self.Logger.logData("Saved to File "+saveFileName+" ::SuccessFull")
+			self.Logger.logData("Saved to file "+saveFileName+" ::successful")
 		except Exception,e:
-			self.Logger.logData("Saving to File"+saveFileName+" ::Failed."+str(e),"R")
+			self.Logger.logData("Saving to file"+saveFileName+" ::failed "+str(e),"R")
 	
 	#def saveTofile(fileName):#Save to this filename
 	#	rcmanagerConfig.writeConfigToFile(self.networkSettings,self.componentList,fileName)
@@ -810,8 +810,15 @@ class MainClass(QtGui.QMainWindow):
 			if component.graphicsItem==x.graphicsItem:
 				self.componentList.remove(component)
 		self.refreshCodeFromTree()
-		self.Logger.logData("Deleted the Component:: "+component.alias+" SuccessFully")
+		self.Logger.logData("Deleted the component '"+component.alias+"' successfully")
 		#print self.componentList.__len__()
+		
+	def keyPressEvent(self, event):	
+		if event.key()==Qt.Qt.Key_F5:
+			self.refreshTreeFromCode()
+		elif event.key()==Qt.Qt.Key_F11:
+			self.UI.actionFull_Screen.toggle()
+			self.toggleFullScreenView()
 
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
@@ -821,7 +828,7 @@ if __name__ == '__main__':
 	if sys.argv.__len__()>1:
 		try:
 			if sys.argv.__len__()>3:
-				raise Exception("Only two args allowed:: Eg\n rcmanager FileName logFileName")
+				raise Exception("Only two args allowed:: Eg\n rcmanager Filename Logfilename")
 			
 			if sys.argv.__len__()>2:
 				if sys.argv[2].endswith(".log"):
